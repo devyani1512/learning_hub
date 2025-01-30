@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Access notes, lab materials, question papers, and more for JIIT students on Jaypee Learning Hub.">
+    <meta name="keywords" content="JIIT, Jaypee Learning Hub, academic resources, notes, lab materials">
+    <meta name="author" content="Jaypee Learning Hub Team">
+    <link rel="canonical" href="https://jaypeelearninghub.great-site.net/">
+    <title>Register - Jaypee Learning Hub</title>
+    <link rel="stylesheet" href="./public/stylesheets/register.css">
+
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+</head>
+<body>
+    <header>
+        <div class="logo-text">
+            <img src="jaypee_main_logo.jpeg" alt="Jaypee Learning Hub - Academic Resources for JIIT Students" class="logo">
+            <h1>Jaypee Learning Hub</h1>
+        </div>
+    </header>
+    <nav class="navb">
+        <div class="nav-bar">
+            <div class="register-but">
+                <a href="#" id="show-register">Register</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Registration Form -->
+    <div class="flex-col register-form" id="register-form">
+        <button class="close-button" id="close-register-button">&times;</button>
+        <h2>Register</h2>
+
+        <% if (errors && errors.length > 0) { %>
+            <ul style="color: red;">
+                <% errors.forEach(function(error) { %>
+                    <li><%= error.msg %></li>
+                <% }) %>
+            </ul>
+        <% } %>
+
+        <form method="POST" action="/register">
+            <input type="email" name="email" placeholder="College Email" required>
+            <p class="special-string-info" style="font-size: 8px;">
+                <ul>
+                    <li>Password must be at least 8 characters long</li>
+                    <li>Include an Uppercase letter</li> 
+                    <li>Include a Lowercase letter</li>
+                    <li>Include a Digit</li> 
+                    <li>Include a Special Character</li>
+                </ul> 
+            </p>
+            <input type="password" name="password" placeholder="Create Password" required>
+            <p class="special-string-info"><b>Enter a special string that you will remember.</b></p>
+            <input type="text" name="secret" placeholder="Your Pet's name or something" required>
+            <button type="submit">Register & Send OTP</button>
+        </form>
+        <p>Already have an account? <a href="/login">Login here</a></p>
+        <div id="register-message"></div>
+    </div>
+
+    <script>
+        document.getElementById('show-register').addEventListener('click', function(event) {
+            event.preventDefault();
+            document.getElementById('register-form').classList.add('active');
+        });
+
+        document.getElementById('close-register-button').addEventListener('click', function(event) {
+            document.getElementById('register-form').classList.remove('active');
+        });
+
+        document.addEventListener('click', function(event) {
+            const registerForm = document.getElementById('register-form');
+            if (registerForm.classList.contains('active') && !registerForm.contains(event.target)) {
+                registerForm.classList.remove('active');
+            }
+        });
+    </script>
+</body>
+</html>
