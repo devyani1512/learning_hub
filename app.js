@@ -99,7 +99,15 @@ app.get('/logout', (req, res) => {
     res.redirect('/');
   });
 });
-
+function checkAdmin(req,res, next){
+  if(admin_email){
+    next();
+  }
+  else{
+    alert("you need to login first");
+    res.redirect("/login");
+  }
+}
 // Display the index (home) page
 app.get('/', (req, res) => {
     const userEmail = req.session.userEmail || null; // or get it from your user model/auth logic
@@ -318,9 +326,11 @@ res.render("admin_page");
 // app.get('/add_link', (req, res) => {
 //   res.render('add_card');
 // });
-
-app.get('/add_subject',checkAdmin, async (req, res) => {
-  const { image, subject, description, sem, added_by } = req.body;
+app.get("/add_subject",async(req,res)=>{
+res.render("add_subject");
+});
+app.post('/add_subject',checkAdmin, async (req, res) => {
+  const { image, subject, description, sem } = req.body;
   const added_by = admin_email;
   try {
     const newCard = await Card.create({ image, subject, description, sem, added_by });
@@ -332,7 +342,7 @@ app.get('/add_subject',checkAdmin, async (req, res) => {
 });
 
 // Edit Card
-app.get('/edit_subject', async(req, res) => {
+app.get('/edit_subject',checkAdmin, async(req, res) => {
   try {
     const cards = await Card.find({});
     res.render('edit_link', { cards });
@@ -342,7 +352,7 @@ app.get('/edit_subject', async(req, res) => {
   
 });
 
-app.post('/edit_subject/:id',async (req, res) => {
+app.post('/edit_subject/:id',checkAdmin,async (req, res) => {
   const { image, subject, description, sem } = req.body;
   
   try {
@@ -354,7 +364,7 @@ app.post('/edit_subject/:id',async (req, res) => {
 });
 
 // Delete Card
-app.get('/delete_subject',(req, res) => {
+app.get('/delete_subject',checkAdmin,(req, res) => {
   Card.find((err, cards) => {
     if (err) {
       res.status(500).send('Error fetching cards');
@@ -364,7 +374,7 @@ app.get('/delete_subject',(req, res) => {
   });
 });
 
-app.post('/delete_subject/:id', async (req, res) => {
+app.post('/delete_subject/:id',checkAdmin, async (req, res) => {
   try {
     await Card.findByIdAndDelete(req.params.id);
     res.redirect('/admin');
@@ -372,20 +382,23 @@ app.post('/delete_subject/:id', async (req, res) => {
     res.status(500).send('Error deleting card');
   }
 });
-app.get("add_link", async(req,res)=>){
+app.get("/add_link",checkAdmin,async(req,res)=>{
+  res.render("add_link");
+})
+app.post("/add_link", async(req,res)=>{
  const {sem, subject , description , link , type}= req.body();
  const added_by = admin_email;
 if(sem==1){
   addSem1Content(subject , description , link , type, admin_email);
 }
-elseif(sem==2){
+else if(sem==2){
   addSem2Content( subject , description , link , typ, admin_email);
 }
 else{
     alert("please enter sem between 1 and 2");
 }
 
-}
+});
 async function addSem1Content(subject, description, link, type, added_by) {
   const sem1Entry = await Sem1.create({
     subject,
