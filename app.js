@@ -9,7 +9,9 @@ app.use(cors());
 const cookieParser = require('cookie-parser');
 const Admin = require('./models/admin')
 const User = require('./models/user'); 
-const Card= require('./models/cards')// Define the user model
+const Card= require('./models/cards')
+const Sem1 = require('./models/sem1');
+const Sem2 = require('./models/sem2');// Define the user model
 const path = require('path');
 app.set('views', path.join(__dirname, 'views'));
 const { body, validationResult } = require('express-validator');
@@ -70,6 +72,7 @@ app.post('/login', async (req, res) => {
     return res.render('login', { error: 'Invalid credentials' });
   }
     if(admin){
+      var admin_email= email;
      const matchadmin = await bcrypt.compare(password, admin.password);
      if(matchadmin){
       res.render('admin_page');
@@ -316,11 +319,12 @@ res.render("admin_page");
 //   res.render('add_card');
 // });
 
-app.get('/add_link', async (req, res) => {
+app.get('/add_subject',checkAdmin, async (req, res) => {
   const { image, subject, description, sem, added_by } = req.body;
+  const added_by = admin_email;
   try {
-    const newCard = new Card({ image, subject, description, sem, added_by });
-    await newCard.save();
+    const newCard = await Card.create({ image, subject, description, sem, added_by });
+    
     res.redirect('/admin');
   } catch (err) {
     res.status(500).send('Error adding card');
@@ -328,7 +332,7 @@ app.get('/add_link', async (req, res) => {
 });
 
 // Edit Card
-app.get('/edit_link', async(req, res) => {
+app.get('/edit_subject', async(req, res) => {
   try {
     const cards = await Card.find({});
     res.render('edit_link', { cards });
@@ -338,8 +342,9 @@ app.get('/edit_link', async(req, res) => {
   
 });
 
-app.post('/edit_link/:id',async (req, res) => {
+app.post('/edit_subject/:id',async (req, res) => {
   const { image, subject, description, sem } = req.body;
+  
   try {
     await Card.findByIdAndUpdate(req.params.id, { image, subject, description, sem });
     res.redirect('/admin');
@@ -349,8 +354,8 @@ app.post('/edit_link/:id',async (req, res) => {
 });
 
 // Delete Card
-app.get('/delete_link',(req, res) => {
-  Card.find({}, (err, cards) => {
+app.get('/delete_subject',(req, res) => {
+  Card.find((err, cards) => {
     if (err) {
       res.status(500).send('Error fetching cards');
     } else {
@@ -359,7 +364,7 @@ app.get('/delete_link',(req, res) => {
   });
 });
 
-app.post('/delete_link/:id', async (req, res) => {
+app.post('/delete_subject/:id', async (req, res) => {
   try {
     await Card.findByIdAndDelete(req.params.id);
     res.redirect('/admin');
@@ -367,4 +372,39 @@ app.post('/delete_link/:id', async (req, res) => {
     res.status(500).send('Error deleting card');
   }
 });
+app.get("add_link", async(req,res)=>){
+ const {sem, subject , description , link , type}= req.body();
+ const added_by = admin_email;
+if(sem==1){
+  addSem1Content(subject , description , link , type, admin_email);
+}
+elseif(sem==2){
+  addSem2Content( subject , description , link , typ, admin_email);
+}
+else{
+    alert("please enter sem between 1 and 2");
+}
+
+}
+async function addSem1Content(subject, description, link, type, added_by) {
+  const sem1Entry = await Sem1.create({
+    subject,
+    description,
+    link,
+    type,
+    added_by
+  });
+
+  console.log("Sem1 content added:", sem1Entry);
+}
+async function addSem2Content(subject, description, link, type, added_by) {
+  const sem2Entry = await Sem2.create({
+    subject,
+    description,
+    link,
+    type,
+    added_by
+  });
+  console.log("Sem2 content added:", sem2Entry);
+}
 app.listen(3000);
