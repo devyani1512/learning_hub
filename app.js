@@ -312,11 +312,11 @@ app.get("/todelete", async (req, res) => {
 res.render("admin_page");
   });
     // Add New Card
-app.get('/add_link', (req, res) => {
-  res.render('add_card');
-});
+// app.get('/add_link', (req, res) => {
+//   res.render('add_card');
+// });
 
-app.post('/add_link', async (req, res) => {
+app.get('/add_link', async (req, res) => {
   const { image, subject, description, sem, added_by } = req.body;
   try {
     const newCard = new Card({ image, subject, description, sem, added_by });
