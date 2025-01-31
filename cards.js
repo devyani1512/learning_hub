@@ -6,7 +6,7 @@ const cardSchema = new mongoose.Schema({
     default: null
   },
   subject: {
-    type: String,
+    type: String,  // Keep subject as a string
     required: true
   },
   description: {
@@ -19,10 +19,9 @@ const cardSchema = new mongoose.Schema({
   },
   added_by: {
     type: String,
-    required: true
   }
 });
 
 const Card = mongoose.model('Card', cardSchema);
-
 module.exports = Card;
+
